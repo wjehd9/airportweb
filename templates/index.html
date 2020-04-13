@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Airport</title>
+  <script type="text/javascript"
+        src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=495fhb6dgs&submodules=panorama,geocoder"></script>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/mdb.min.css" rel="stylesheet">
+  <link href="/static/css/style.min.css" rel="stylesheet">
+
+  <style type="text/css">
+    .view {
+      background: url("https://post-phinf.pstatic.net/MjAxOTA0MDNfMTMy/MDAxNTU0Mjc2MzQ0NzQ0._GLKA4BKY74jWR9n0AyriiGxthg-EFSHKgxdq-40sRYg.cdg2mG6aKmUE32Mbwa6h-4rdDLKnYBuaTUaxHIu_LW0g.JPEG/20180206012003429_0.jpg?type=w1200")no-repeat center center;
+      background-size: cover;
+    }
+    @media (min-width: 768px) {
+      .view {
+        overflow: visible;
+        margin-top: -56px;
+      }
+    }
+      .navbar {
+        z-index: 1;
+    }
+
+    html,
+    body,
+    header,
+    .view {
+      height: 100%;
+    }
+  </style>
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #011123">
+    <div class="container">
+      <a class="navbar-brand" href="/home">
+        <img src="/static/img/logo.png" width="110" height="40" class="d-inline-block align-top" alt="">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+          <!-- Left -->
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="/" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Flight schedule</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="/departure">Departure</a>
+                  <a class="dropdown-item" href="/arrival">Arrival</a>
+                </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/facilities">Facilities</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/com.hello">Map</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/mypage">MyPage</a>
+            </li>             
+          </ul>
+
+          <form class="form-inline my-2 my-lg-0">
+            <h1 id="clock" style="color:white;">00:00</h1>
+          </form>
+        </div>
+
+    </div>
+  </nav>
+  <div class="view intro-2">
+    <div class="full-bg-img">
+      <div class="mask rgba-black-strong flex-center">
+        <div class="container">
+          <div class="white-text text-center">
+            <h1 class="mt-4 mb-4">
+              <strong>인천국제공항에 오신 것을 환영합니다.</strong>
+            </h1>
+            <br>
+            <div>
+              <form method="POST" action="/modal_submit">
+                <input class="w-responsive text-center w-50 p-3 my-2 mb-4" style="background: transparent;" type="text" name="flight_search_input"> 
+                <br>
+                <button type="submit" class="btn btn-outline-white btn-lg">항공편 등록하기</button>
+                <button type="button" class="btn btn-outline-white btn-lg" data-toggle="modal" data-target="#exampleModal" onclick="setSite();">등록된 항공편 보기</button>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+ 
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-notify modal-info" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <i class="fas fa-plane-departure"></i>
+          <h5 class="heading lead">등록된 항공편</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">Flilght Id</h6>{{resultData.flightId}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">항공사</h6>{{resultData.airline}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">예정시간(HHMM)</h6>{{resultData.scheduleDateTime}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">도착공항</h6> {{resultData.airport}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">체크인카운터</h6>{{resultData.chkinrange}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">탑승구</h6>{{resultData.gatenumber}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">운항상태</h6>{{resultData.remark}}</p>
+          <p><h6 style="display:inline" class="font-weight-bold mb-3 mr-3">터미널</h6>{{resultData.terminalId}}</p>
+        </div>
+        <div class="modal-footer">
+          <button id="flight_search_button" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#mapModal" data-dismiss="modal" aria-label="Close" onclick="search_shortest_path1();">게이트까지 지도보기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">지도</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="map" style="width:770px;height:500px;"></div>
+        </div>
+        <div class="modal-footer">
+          <p id="path"></p>
+          <p id="path_time"></p>
+          <p id="length"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="departuretime" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">지도</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Go to Gate!!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#mapModal" data-dismiss="modal" aria-label="Close" onclick="search_shortest_path1();">게이트까지 지도보기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <footer class="page-footer font-small wow fadeIn" style="background-color: #334164">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 py-3">
+          <div class="mb-3 flex-center">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright text-center py-3" style="background-color: #1d2539">© 2019 Copyright:
+      <a href="https://mdbootstrap.com/education/bootstrap/"> KAU</a>
+    </div>
+  </footer>
+
+
+  <script type="text/javascript" src="/static/js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="/static/js/popper.min.js"></script>
+  <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/static/js/mdb.min.js"></script>
+  <script type="text/javascript" src="/static/js/mdb.js"></script>
+
+  <script src="/static/djk.js"></script>
+  <script src="/static/tsp.js"></script>
+  <script src="/static/terminal_node_making.js"></script>
+  <script src="/static/facility_node_making.js"></script>
+  <script src="/static/cross_node_making.js"></script>
+  <script src="/static/straight_node.js"></script>
+  <script src="/static/straight_name.js"></script>
+  <script src="/static/node_length.js"></script>
+  <script src="/static/current_length.js"></script>
+  <script src="/static/straight.js"></script>
+  <script src="/static/terminal_node_checking.js"></script>
+  <script src="/static/facility_node_checking.js"></script>
+  <script type="text/javascript">
+    new WOW().init();
+  </script>
+
+  <script>
+
+    var clockTarget = document.getElementById("clock");
+    var count_clock = 0;
+    
+    function clock() {
+
+      now = new Date(); 
+      var Year = now.getFullYear();
+      var Month = now.getMonth()+1;
+      var Day = now.getDate();
+      var str = String({{resultData.scheduleDateTime}});      
+      var Hour = str.substring(0,2);
+      var Minute = str.substring(2,4);
+     
+      
+      dday = new Date(Year,Month,Day,Hour,Minute,00); 
+      days = (dday - now) / 1000 / 60 / 60 / 24; 
+      daysRound = Math.floor(days); 
+      hours = (dday - now) / 1000 / 60 / 60 - (24 * daysRound); 
+      hoursRound = Math.floor(hours); 
+      minutes = (dday - now) / 1000 /60 - (24 * 60 * daysRound) - (60 * hoursRound); 
+      minutesRound = Math.floor(minutes); 
+      seconds = (dday - now) / 1000 - (24 * 60 * 60 * daysRound) - (60 * 60 * hoursRound) - (60 * minutesRound); 
+      secondsRound = Math.round(seconds); 
+     
+
+      clockTarget .innerText = 
+      `${hoursRound < 10 ? `0${hoursRound}` : hoursRound}:${minutesRound < 10 ? `0${minutesRound }`  : minutesRound }:${secondsRound < 10 ? `0${secondsRound }`  : secondsRound }`;
+      
+      if(hoursRound==00 && minutesRound<=19 && count_clock == 0){
+        count_clock = 1;
+        $(document).ready(function(){
+          setSite();
+          $("#departuretime").modal();
+        });
+      }
+    }
+
+    function init_clock() {
+      clock();
+      setInterval(clock, 1000);
+    }
+    
+    init_clock();
+
+  </script>
+
+  <script>
+    var latitude, longitude=0;
+    var center_position = new naver.maps.LatLng(37.452631, 126.448061);
+    // 현재 위치에 대한 명시
+    var mapOptions = {
+        center: center_position,
+        zoom: 11
+    };
+    var map = new naver.maps.Map(document.getElementById('map'), mapOptions);
+    var map2 = map;
+
+    var final_polyline_node = new naver.maps.KVOArray();
+    var length_distance, total_distance;
+
+    var node_markers = [
+        new naver.maps.Marker({
+            map: map2,
+            visible: false
+        }),
+        new naver.maps.Marker({
+            map: map2,
+            visible: false
+        })
+    ];;
+    var final, final_path;
+
+    function search_shortest_path1() {
+        site_name = [];
+
+        site_name[0] = "현재위치";
+        end_value_T="T";
+        end_value = end_value_T.concat({{resultData.gatenumber}});
+        site_name[1] = end_value;
+
+        final = [];
+        final_path = [];
+
+        total_distance = 0;
+        length_distance = [];
+
+        node_markers[0].setMap(null);
+        node_markers[1].setMap(null);
+
+        node_markers[0] = new naver.maps.Marker({
+          map: map2,
+          visible: false
+        })
+        node_markers[1] = new naver.maps.Marker({
+          map: map2,
+          visible: false
+        })        
+
+        final_polyline_node.clear();
+
+
+        
+        final = g.shortestPath(site_name[0], site_name[1]).concat([site_name[0]]).reverse();
+        if (final.length == 1) {
+            document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            document.getElementById("path").innerHTML = "";
+            document.getElementById("path_time").innerHTML = "";
+            return;
+        } else if(site_name[0] == '') {
+            document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            document.getElementById("path").innerHTML = "";
+            document.getElementById("path_time").innerHTML = "";
+            return;
+        } else if(site_name[1] == '') {
+            document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            document.getElementById("path").innerHTML = "";
+            document.getElementById("path_time").innerHTML = "";
+            return;
+        } else {
+            node_marker_check(site_name[0], 0);
+            node_marker_check(site_name[1], 1);
+            push_node();
+            length_distance[0] = dist;
+        }
+    
+        
+        document.getElementById("path").innerHTML = site_name[0] + "->";
+        document.getElementById("path").innerHTML += site_name[1];
+
+        final_show();
+      
+        var final_polyline = new naver.maps.Polyline(
+            {
+                map: map,
+                endIcon: naver.maps.PointingIcon.BLOCK_ARROW,
+                endIconSize: 9,
+                strokeColor: '#FF0000',
+                strokeWeight: 3,
+                visible: true
+            }
+        )
+            
+        final_polyline.setPath(final_path);
+        
+    }
+
+    function push_node() {
+        for (var m in final) {
+            if (final[m] == '현재위치') {
+                final_path.push(node[0]);
+            }
+            if (final[m] == 'INTER') {
+                final_path.push(INTER);
+            }
+            for (var i = 0; i < cross_name.length; i++) {
+                if (final[m] == cross_name[i]) {
+                    final_path.push(cross_node[i]);
+                    break;
+                }
+            }
+            for (var i = 1; i < terminal_name.length; i++) {
+                if (final[m] == terminal_name[i]) {
+                    final_path.push(terminal_node[i]);
+                    break;
+                }
+            }
+            for (var i = 1; i < facility_name.length; i++) {
+                if (final[m] == facility_name[i]) {
+                    final_path.push(facility_node[i]);
+                    break;
+                }
+            }
+        }
+    }
+
+
+    function node_marker_check(a, b) {
+        if (a == '현재위치') {
+            node_markers[b].setMap(map2);
+            node_markers[b].setPosition(node[0]);
+            node_markers[b].setVisible(true);
+        }
+        terminal_node_check2(a, b);
+        facility_node_check2(a, b);
+
+        node_markers[b].setTitle(a);
+    }
+
+    function final_show() {
+        for (var m in length_distance) {
+            total_distance += length_distance[m];
+        }
+
+        if (total_distance == 0) {
+            for (var z = 0; z < node_count + 2; z++) {
+                node_markers[z].setMap(null);
+            }
+
+            document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+        }
+        else {
+            document.getElementById("length").innerHTML = total_distance.toFixed(6) + "m";
+            path_time_calculate();
+        }
+    }
+
+    function path_time_calculate() {
+        var temp_time = Math.floor(total_distance);
+        var hour = 0, minute = 0, second = 0;
+
+        if (temp_time >= 3600) {
+            hour = Math.floor(temp_time / 3600);
+        }
+        if (temp_time >= 60) {
+            minute = Math.floor((temp_time - 3600 * hour) / 60);
+        }
+        second = temp_time - 3600 * hour - 60 * minute;
+
+        document.getElementById("path_time").innerHTML = hour + "시간 " + minute + "분 " + second + "초 걸립니다.";
+    }
+
+    function setSite() {
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            latitude = pos.coords.latitude.toFixed(6);
+            longitude = pos.coords.longitude.toFixed(6);
+
+            latitude = 37.44951175;
+            longitude = 126.4533856;
+
+            calculate();
+        });
+
+    }
+
+  </script>
+
+</body>
+
+</html>

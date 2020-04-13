@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.min.css" rel="stylesheet">
+    <style type="text/css">
+    @media (min-width: 800px) and (max-width: 850px) {
+      .navbar:not(.top-nav-collapse) {
+        background: #1C2331 !important;
+      }
+    }
+
+    </style>
+    <!-- Font Awesome -->
+
+    <script type="text/javascript"
+        src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=oafzj48kag&submodules=panorama,geocoder"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #011123">
+      <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="img/logo.png" width="110" height="40" class="d-inline-block align-top" alt="">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+          <!-- Left -->
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Flight schedule</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="#">Departure</a>
+                  <a class="dropdown-item" href="#">Arrival</a>
+                </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Facilities</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Map<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">MyPage</a>
+            </li>                
+          </ul>
+        </div>
+
+      </div>
+    </nav>
+
+    <section class="my-5">
+      <h2 class="h1-responsive font-weight-bold text-center my-5">지도</h2>
+        <div class="container">
+          <div class="row">
+
+            <div class="col-lg-7">
+              <div id="map" class="z-depth-1-half map-container-section mb-4" style="height: 500px"> </div>
+            </div>
+
+            <div class="col-lg-5 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <section class="path">
+                            <section class="first">
+                                <form name="cate" id="cate">
+                                    <p class="mb-0">카테고리</p>
+                                    <div class="row">
+                                        <div class="col-8 my-2">
+                                            <select name="category" class="browser-default custom-select">
+                                                <option value="gate" selected>gate</option>
+                                                <option value="food">food</option>
+                                                <option value="snack">snack</option>
+                                                <option value="money">money</option>
+                                                <option value="shop">shop</option>
+                                                <option value="roaming">roaming</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary waves-effect" type="button" value="선택" onclick="category_marker(cate);">선택</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
+
+                            <section class="path_search">
+                                <form name="form" id="form">
+                                    <div class="form-row mb-0">
+                                        <div class="form-group col-md-8 mt-4">
+                                          <label for="inputAddress" >출발지</label>
+                                          <input type="text" name="start" class="form-control" placeholder="출발지를 입력하세요">
+                                        </div>
+
+                                        <div class="form-group col-md-4 mt-5">
+                                          <button type="button" class="btn btn-primary btn-md" id="add" value="경유지 추가" onClick="addRow();">경유지 추가</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-row" id="addTablediv" name="addTablediv">
+                                        <div class="col-md-12">
+                                            <table id="addTable">
+
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-8">
+                                          <label for="inputAddress" >도착지</label>
+                                          <input type="text" name="end" class="form-control" placeholder="도착지를 입력하세요">
+                                        </div>
+
+                                        <div class="form-group col-md-4 mt-4"></div>
+                                    </div>
+
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                      <button type="button" class="btn btn-default btn-md" onclick="search_shortest_path1(form);">경로안내 1</button>
+                                      <button type="button" class="btn btn-default btn-md" onclick="search_shortest_path2(form);">경로안내 2</button>
+                                      <button class="btn btn-default btn-md" type="submit">전송</button>
+                                    </div>
+                                    <div style="display:none;">
+                                        <input id="add123" type="text" name="add123" value="0">
+                                    </div>
+                                </form>
+
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-info btn-sm" onclick="allClear();">초기화</button>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="setSite();">현위치 지정</button>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="current_find_facility();">주변 시설</button>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="path_switch();">위치 전환</button>
+                                </div>
+
+                            </section>
+                            <section class="path_time">
+                                <p id="length"></p>
+                                <p id="path"></p>
+                                <p id="path_time"></p>
+                            </section>
+                        </section>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <section class="my-5">
+        <P id="show_recommend_text"></P>
+    </section>
+
+
+
+
+    <footer class="page-footer font-small wow fadeIn" style="background-color: #334164">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 py-3">
+              <div class="mb-3 flex-center">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright text-center py-3" style="background-color: #1d2539">© 2019 Copyright:
+          <a href="https://mdbootstrap.com/education/bootstrap/"> KAU</a>
+        </div>
+    </footer> 
+
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <script type="text/javascript" src="js/mdb.js"></script>
+
+    
+    <script src="djk.js"></script>
+    <!-- <script src="tsp.js"></script> -->
+    <script src="terminal_node_making.js"></script>
+    <script src="facility_node_making.js"></script>
+    <script src="cross_node_making.js"></script>
+    <script src="straight_node.js"></script>
+    <script src="straight_name.js"></script>
+    <script src="node_length.js"></script>
+    <script src="current_length.js"></script>
+    <script src="straight.js"></script>
+    <script src="terminal_node_checking.js"></script>
+    <script src="facility_node_checking.js"></script>
+    <script src="ga.js"></script>
+    <script src="p5.js"></script>
+    <script src="matrix.js"></script>
+    <script>
+        var center_position = new naver.maps.LatLng(37.449326, 126.451166);
+        // 현재 위치에 대한 명시
+        var mapOptions = {
+            center: center_position,
+            zoom: 10
+        };
+        var map = new naver.maps.Map(document.getElementById('map'), mapOptions);
+        var map2 = map;
+
+        // 현재 위치에 대한 마커 명시
+        var marker = new naver.maps.Marker({
+            position: center_position,
+            map: map,
+            title: "현재 위치",
+            visible: false
+        });
+
+        var oTbl;
+        var node_count = 0;
+
+        function addRow() {
+            oTbl = document.getElementById("addTable");
+            var oRow = oTbl.insertRow();
+            oRow.onmouseover = function () {
+                oTbl.clickedRowIndex = this.rowIndex
+            }; //clickedRowIndex - 클릭한 Row의 위치를 확인;
+
+            //삽입될 Form Tag
+            node_count++;
+
+            $('#add123').val(node_count);
+
+            var frmTag = "<tr><td width='10%'></td><td width='60%'><input type='text' class='form-control' name='middle' placeholder='경유지를 입력하세요'></td>";
+            frmTag += "<td width='30%'><input type='button' class='btn btn-primary btn-sm' name='remove' value='삭제' onClick='removeRow()'></td></tr>";
+
+            oRow.innerHTML = frmTag;
+        }
+
+        function removeRow() {
+            node_count--;
+            $('#add123').val(node_count);
+
+            document.forms["form"].add.disabled = false;
+            oTbl.deleteRow(oTbl.clickedRowIndex);
+        }
+
+        var site_name = [];
+        var xxxx = document.getElementsByName("middle");
+
+        var final_polyline_node = new naver.maps.KVOArray();
+        var final_polyline;
+        var length_distance, total_distance;
+        var node_markers = [];
+        var final, final_path;
+
+        var temparr;
+        var arr_element;
+        var recommend_length_distance, recommend_total_distance, mmmm, nnnn;
+        var recommend, recommend_path;
+        var temp_store_recommend_total_distance;
+        var temp_index;
+        var finalarr;
+
+        var cities = [];
+        var totalCities;
+        var popSize = 100;
+
+        var population = [];
+        var populations = [];
+        var fitness = [];
+
+        var recordDistance = Infinity;
+        var bestEver;
+        var currentBest;
+
+        var order = [];
+        var iiindex = [];
+
+        var rrindex = [];
+        var cal_min;
+
+        var rec_check;
+
+        var temp_dist;
+        var temp_array;
+
+        // djk 방식
+        function search_shortest_path1(node_val) {
+            rec_check = 0;
+
+            site_name = [];
+
+            site_name[0] = node_val.start.value;
+            for (var z = 1; z <= node_count; z++) {
+                site_name[z] = xxxx[z - 1].value;
+            }
+
+            site_name[node_count + 1] = node_val.end.value;
+
+            final = [];
+            final_path = [];
+            
+            total_distance = 0;
+            length_distance = [];
+
+            mmmm = 0;
+
+            if(node_markers[0] != null) {
+                for (var z = 0; z < node_markers.length; z++) {
+                    node_markers[z].setMap(null);
+                }
+            }
+
+            node_markers = [];
+            for (var z = 0; z < node_count + 2; z++) {
+                node_markers[z] = new naver.maps.Marker({
+                    map: map2,
+                    visible: false
+                })
+            }
+
+            final_polyline_node.clear();
+
+            // cal_min = 99999999;
+
+            iiindex = [];
+
+            temp_dist = [];
+            temp_array = [];
+
+            totalCities = site_name.length;
+
+            if (site_name[0] != "현재위치") {
+                for (var i = 0; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(site_name[i]);
+                }
+            } else {
+                iiindex[0] = matrix_dist.length; // 초기 matrix의 길이
+                for (var i = 1; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(site_name[i]);
+                }
+
+                for (var z = 0; z < all_list.length; z++) {
+                    temp_array = g.shortestPath("현재위치", all_list[z]).concat("현재위치").reverse();
+                    if (temp_array.length == 1) {
+                        temp_dist[z] = 0;
+                    } else {
+                        temp_dist[z] = dist;
+                    }
+                }
+            }
+
+            for(var n = 0; n < node_count + 1; n++) {
+                final = g.shortestPath(site_name[n], site_name[n + 1]).concat([site_name[n]]).reverse();
+                if (final.length == 1) {
+                    document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                    document.getElementById("path").innerHTML = "";
+                    document.getElementById("path_time").innerHTML = "";
+                    return;
+                } else if(site_name[n] == '') {
+                    document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                    document.getElementById("path").innerHTML = "";
+                    document.getElementById("path_time").innerHTML = "";
+                    return;
+                } else {
+                    node_marker_check(site_name[n], n);
+                    node_marker_check(site_name[n + 1], n + 1);
+                    push_node();
+                    length_distance[mmmm] = dist;
+                    mmmm++;
+                }
+            }
+            
+            document.getElementById("path").innerHTML = site_name[0] + "->";
+
+            for(var z = 1; z <= node_count; z++) {
+                document.getElementById("path").innerHTML += site_name[z] + "->";
+            }
+            
+            document.getElementById("path").innerHTML += site_name[node_count + 1];
+
+            final_show();
+
+            final_polyline = new naver.maps.Polyline(
+                {
+                    map: map,
+                    strokeColor: '#FF0000',
+                    strokeWeight: 5,
+                    visible: true
+                }
+            )
+            final_polyline.setPath(final_path);
+            final_polyline_node = final_polyline.getPath();            
+
+            // 2차원 배열 예시            
+            // 경유지 1개
+            // temparr = [["현재위치", "T11"]];
+            // temparr = [["현재위치", "신라면세점2(명품브랜드)", "T11"], ["현재위치", "엔제리너스(동편)", "T11"], ["현재위치", "롯데리아", "T11"]];
+            // temparr = [["현재위치", "신라면세점2(명품브랜드)", "위니비니", "T11"], ["현재위치", "엔제리너스(동편)", "로봇김밥", "T11"], ["현재위치", "롯데리아", "엔제리너스(서편)", "T11"]];
+            temparr = [["비비고", "뚜레쥬르키오스크", "SM면세점2(향수/화장품)", "롯데면세점1(주류/담배)", "T40"]
+            , ["비비고", "뚜레쥬르키오스크", "엔타스면세점(주류/담배)", "신라면세점5(향수/화장품)", "T40"]
+            , ["비비고", "뚜레쥬르키오스크", "엔타스면세점(주류/담배)", "시티면세점2(향수/화장품)", "T40"]];
+
+
+            // tsp 방식 - 추천 받았을 때 실행하기 위한 구문
+            search_recommend_path(temparr);
+
+            reco_cal();
+
+            document.getElementById("show_recommend_text").innerHTML = "<h2 class='h1-responsive font-weight-bold text-center my-5'>추천경로</h2>";
+            for (var z = 0; z < finalarr.length; z++) {
+                document.getElementById("show_recommend_text").innerHTML += "<div class='container'><hr><form style='align: center;' name='form2' id='form2'>";
+                document.getElementById("show_recommend_text").innerHTML += "<div class='md-form input-group'>";
+                for (var y = 0; y < finalarr[z].length; y++) {
+                    document.getElementById("show_recommend_text").innerHTML += "<input style='border-color: #ffffff; width: 14%; float: left' name='start' type='text' class='form-control' value='" + finalarr[z][y] + "' disabled>";
+                }
+                document.getElementById("show_recommend_text").innerHTML += "<div class='input-group-append'>";
+                document.getElementById("show_recommend_text").innerHTML += "<button class='btn btn-md btn-outline-primary m-0 px-3 py-2 z-depth-0 waves-effect' data-toggle='modal' data-target='#mapModal' data-dismiss='modal' aria-label='Close' onclick = 'recommend_show_path(finalarr[" + z + "]);' type = 'button' > Button</button >";
+                document.getElementById("show_recommend_text").innerHTML += "</form></div>";
+            }
+        }
+
+        // tsp 방식
+        function search_shortest_path2(node_val) {
+            rec_check = 0;
+
+            site_name = [];
+
+            site_name[0] = node_val.start.value;
+
+            for (var z = 1; z <= node_count; z++) {
+                site_name[z] = xxxx[z - 1].value;
+            }
+
+            site_name[node_count + 1] = node_val.end.value;
+
+            final = [];
+            final_path = [];
+
+            total_distance = 0;
+            length_distance = [];
+
+            mmmm = 0;
+
+            if (node_markers[0] != null) {
+                for (var z = 0; z < node_markers.length; z++) {
+                    node_markers[z].setMap(null);
+                }
+            }
+
+            node_markers = [];
+            for (var z = 0; z < node_count + 2; z++) {
+                node_markers[z] = new naver.maps.Marker({
+                    map: map2,
+                    visible: false
+                })
+            }
+
+            final_polyline = new naver.maps.Polyline(
+                {
+                    map: map,
+                    strokeColor: '#FF00FF',
+                    strokeWeight: 5,
+                    visible: true
+                }
+            )
+
+            final_polyline_node.clear();
+
+            totalCities = site_name.length;
+
+            // cal_min = 99999999;
+
+            iiindex = [];
+
+            temp_dist = [];
+            temp_array = [];
+
+            if (site_name[0] != "현재위치") {
+                for (var i = 0; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(site_name[i]);
+                }
+            } else {
+                iiindex[0] = matrix_dist.length; // 초기 matrix의 길이
+                for (var i = 1; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(site_name[i]);
+                }
+
+                for (var z = 0; z < all_list.length; z++) {
+                    temp_array = g.shortestPath("현재위치", all_list[z]).concat("현재위치").reverse();
+                    if (temp_array.length == 1) {
+                        temp_dist[z] = 0;
+                    } else {
+                        temp_dist[z] = dist;
+                    }
+                }
+            }
+            console.log(node_count);
+            if(node_count == 0 || node_count == 1) {
+                for (var n = 0; n < node_count + 1; n++) {
+                    final = g.shortestPath(site_name[n], site_name[n + 1]).concat([site_name[n]]).reverse();
+                    if (final.length == 1) {
+                        document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                        document.getElementById("path").innerHTML = "";
+                        document.getElementById("path_time").innerHTML = "";
+                        return;
+                    } else if (site_name[n] == '' || site_name[n + 1] == '') {
+                        document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                        document.getElementById("path").innerHTML = "";
+                        document.getElementById("path_time").innerHTML = "";
+                        return;
+                    } else {
+                        node_marker_check(site_name[n], n);
+                        node_marker_check(site_name[n + 1], n + 1);
+                        push_node();
+                        length_distance[mmmm] = dist;
+                        mmmm++;
+                    }
+                }
+
+                final_show();
+            } else {
+                for (var i = 0; i < totalCities; i++) {
+                    if (site_name[0] != "현재위치") {
+                        cities[i] = all_point_list[iiindex[i]];
+                    } else {
+                        if (i == 0) {
+                            cities[i] = { x: longitude, y: latitude };
+                        } else {
+                            cities[i] = all_point_list[iiindex[i]];
+                        }
+                    }
+
+                    order[i] = i;
+                }
+                
+                order = order.slice(1, totalCities - 1);
+                
+                for (var i = 0; i < popSize; i++) {
+                    populations[i] = shuffle(order); // order을 shuffle한 결과를 population에 넣음
+                    population[i] = [0].concat(populations[i]).concat(totalCities - 1);
+                }
+
+                for (var n = 0; n < node_count + 2; n++) {
+                    if(site_name[n] == '') {
+                        document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                        document.getElementById("path").innerHTML = "";
+                        document.getElementById("path_time").innerHTML = "";
+                        return;
+                    } else {
+                        node_marker_check(site_name[n], n);
+                    }
+                }
+                
+                calculateFieness();
+                normalizeFitness();
+                nextGeneration();
+
+                final_show2();
+
+                
+            }
+            final_polyline.setPath(final_path);
+            final_polyline_node = final_polyline.getPath();
+
+            // 2차원 배열 예시
+            // temparr = [["현재위치", "T11"]];
+            // temparr = [["현재위치", "신라면세점2(명품브랜드)", "T11"], ["현재위치", "엔제리너스(동편)", "T11"], ["현재위치", "롯데리아", "T11"]];
+            // temparr = [["현재위치", "신라면세점2(명품브랜드)", "위니비니", "T11"], ["현재위치", "엔제리너스(동편)", "로봇김밥", "T11"], ["현재위치", "롯데리아", "엔제리너스(서편)", "T11"]];
+            temparr = [["비비고", "뚜레쥬르키오스크", "SM면세점2(향수/화장품)", "롯데면세점1(주류/담배)", "T40"]
+                , ["비비고", "뚜레쥬르키오스크", "엔타스면세점(주류/담배)", "신라면세점5(향수/화장품)", "T40"]
+                , ["비비고", "뚜레쥬르키오스크", "엔타스면세점(주류/담배)", "시티면세점2(향수/화장품)", "T40"]];
+
+            // tsp 방식 - 추천 받았을 때 실행하기 위한 구문
+            search_recommend_path(temparr);
+
+            reco_cal();
+
+            document.getElementById("show_recommend_text").innerHTML = "<h2 class='h1-responsive font-weight-bold text-center my-5'>추천경로</h2>";
+            for (var z = 0; z < finalarr.length; z++) {
+                document.getElementById("show_recommend_text").innerHTML += "<div class='container'><hr><form style='align: center;' name='form2' id='form2'>";
+                document.getElementById("show_recommend_text").innerHTML += "<div class='md-form input-group'>";
+                for (var y = 0; y < finalarr[z].length; y++) {
+                    document.getElementById("show_recommend_text").innerHTML += "<input style='border-color: #ffffff; width: 14%; float: left' name='start' type='text' class='form-control' value='" + finalarr[z][y] + "' disabled>";
+                }
+                document.getElementById("show_recommend_text").innerHTML += "<div class='input-group-append'>";
+                document.getElementById("show_recommend_text").innerHTML += "<button class='btn btn-md btn-outline-primary m-0 px-3 py-2 z-depth-0 waves-effect' data-toggle='modal' data-target='#mapModal' data-dismiss='modal' aria-label='Close' onclick = 'recommend_show_path(finalarr[" + z + "]);' type = 'button' > Button</button >";
+                document.getElementById("show_recommend_text").innerHTML += "</form></div>";
+            }
+        }
+
+        function calcDistance(points, order) { //거리계산
+            var cal_sum = 0;
+            cal_min = 99999999;
+            // final = [];
+            // console.log(order);
+
+            for (var i = 0; i < order.length - 1; i++) {
+                var cityAIndex = order[i];
+                var cityA = points[cityAIndex];
+                var cityBIndex = order[i + 1];
+                var cityB = points[cityBIndex];
+                
+                if(rec_check == 0) { // 추천 경로 전의 길이 계산 값
+                    if (iiindex[0] = matrix_dist.length) { // 초기 시작이 현재 위치일 때
+                        if (cityAIndex == 0) { // 앞의 순서가 0일 때
+                            if (temp_dist[iiindex[cityBIndex]] != 0) {
+                                cal_sum += temp_dist[iiindex[cityBIndex]];
+                            } else {
+                                return cal_min;
+                            }
+                        } else { // 앞의 순서가 0이 아닐 때
+                            if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                                cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                            } else {
+                                return cal_min;
+                            }
+                        }
+                    } else { // 초기 시작이 현재 위치가 아닐 때
+                        console.log(matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]]);
+                        if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                            cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                        } else {
+                            return cal_min;
+                        }
+                        // if (cityAIndex == 0) { // 앞의 순서가 0일 때
+                        //     if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                        //         cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                        //     } else {
+                        //         return;
+                        //     }
+                        // } else { // 앞의 순서가 0이 아닐 때
+                        //     if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                        //         cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                        //     } else {
+                        //         return;
+                        //     }
+                        // }
+                    }
+                } else { // 추천 경로의 길이 계산 값
+                    if (rrindex[0] = matrix_dist.length) { // 초기 시작이 현재 위치일 때
+                        if (cityAIndex == 0) { // 앞의 순서가 0일 때
+                            if (temp_dist[rrindex[cityBIndex]] != 0) {
+                                cal_sum += temp_dist[rrindex[cityBIndex]];
+                            } else {
+                                return cal_min;
+                            }
+                        } else { // 앞의 순서가 0이 아닐 때
+                            if (matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]] != 0) {
+                                cal_sum += matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]];
+                            } else {
+                                return cal_min;
+                            }
+                        }
+                    } else { // 초기 시작이 현재 위치가 아닐 때
+                        if (matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]] != 0) {
+                            cal_sum += matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]];
+                        } else {
+                            return cal_min;
+                        }
+                        // if (cityAIndex == 0) { // 앞의 순서가 0일 때
+                        //     if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                        //         cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                        //     } else {
+                        //         return;
+                        //     }
+                        // } else { // 앞의 순서가 0이 아닐 때
+                        //     if (matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]] != 0) {
+                        //         cal_sum += matrix_dist[iiindex[cityAIndex]][iiindex[cityBIndex]];
+                        //     } else {
+                        //         return;
+                        //     }
+                        // }
+                    }
+                    // if (cityAIndex == 0) { // 앞의 순서가 0일 때
+                    //     if (temp_dist[rrindex[cityBIndex]] != 0) {
+                    //         cal_sum += temp_dist[rrindex[cityBIndex]];
+                    //     } else {
+                    //         return 99999999;
+                    //     }
+                    // } else { // 앞의 순서가 0이 아닐 때
+                    //     if (matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]] != 0) {
+                    //         cal_sum += matrix_dist[rrindex[cityAIndex]][rrindex[cityBIndex]];
+                    //     } else {
+                    //         return 99999999;
+                    //     }
+                    // }
+                }
+            }
+
+            if(cal_sum < cal_min) {
+                cal_min = cal_sum;
+            }
+            total_distance = cal_min;
+            return cal_min;
+        }
+
+        function swap(a, i, j) { //swap
+            var temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
+        }
+
+        function draw() { //화면상에 보여주는 부분
+            
+        }
+
+        var zzzzz;
+
+        // tsp 방식 - 추천 받았을 때
+        // arr=[[],[],[]] 형식의 2차원 배열
+        function search_recommend_path(arr) {
+            rec_check = 1;
+
+            // 입력된 두 장소에 따른 다익스트라 경로들을 담기 위한 변수 -> 추천 경로 목록 개수 * 입력된 시설 수 : (2차원 배열)
+            recommend = new Array();
+            for(var z = 0; z < arr.length; z++) {
+                recommend[z] = new Array();
+            }
+            // 입력된 두 장소에 따른 다익스트라 경로의 거리를 담기 위한 변수 -> 추천 경로 목록 개수 * 입력된 시설 수 : (2차원 배열)
+            recommend_path = new Array();
+            for (var z = 0; z < arr.length; z++) {
+                recommend_path[z] = new Array();
+            }
+
+            // 각 경로에 대한 총 거리를 담기 위한 변수
+            recommend_total_distance = [];
+            // 각 경로에서 구간 별 거리를 담기 위한 변수 -> 추천 경로 목록 개수 * 입력된 시설 수 : (2차원 배열)
+            recommend_length_distance = new Array();
+            for (var z = 0; z < arr.length; z++) {
+                recommend_length_distance[z] = new Array();
+            }
+
+            arr_element = arr[0].length - 2;
+
+            if(arr[0][0] == "현재위치") {
+                calculate();
+            }
+
+            totalCities = arr[0].length;
+            
+            outer : for(var z = 0; z < arr.length; z++) {
+                recommend_total_distance[z] = 0;
+
+                nnnn = 0;
+
+                rrindex = [];
+
+                if (arr[z][0] != "현재위치") {
+                    for (var i = 0; i < totalCities; i++) {
+                        rrindex[i] = all_list.indexOf(arr[z][i]);
+                    }
+                } else {
+                    rrindex[0] = matrix_dist.length;
+                    for (var i = 1; i < totalCities; i++) {
+                        rrindex[i] = all_list.indexOf(arr[z][i]);
+                    }
+                }
+
+                if(arr_element == 0 || arr_element == 1) {
+                    inner1 : for (var n = 0; n < arr_element + 1; n++) {
+                        recommend[z][n] = g.shortestPath(arr[z][n], arr[z][n + 1]).concat([arr[z][n]]).reverse();
+                        // 연속하여 입력된 두 시설의 이름이 같을 때
+                        if (arr[z][n] == arr[z][n + 1]) {
+                            continue outer;
+                        }
+                        // 시작 이외의 경로가 없으면
+                        if (recommend[z][n].length == 1) {
+                            continue outer;
+                        }
+                        push_node2(z);
+                        recommend_length_distance[z][nnnn] = dist;
+                        nnnn++
+                    }
+
+                    for (var m in recommend_length_distance[z]) {
+                        recommend_total_distance[z] += recommend_length_distance[z][m];
+                    }
+                } else {
+                    inner2 : for (var n = 0; n < arr_element + 1; n++) {
+                        // 연속하여 입력된 두 시설의 이름이 같을 때
+                        if (arr[z][n] == arr[z][n + 1]) {
+                            continue outer;
+                        }
+                    }
+
+                    cities = [];
+
+                    // cal_min = 99999999;
+
+                    for (var i = 0; i < totalCities; i++) {
+                        if (arr[z][0] != "현재위치") {
+                            cities[i] = all_point_list[rrindex[i]];
+                        } else {
+                            if (i == 0) {
+                                cities[i] = { x: longitude, y: latitude };
+                            } else {
+                                cities[i] = all_point_list[rrindex[i]];
+                            }
+                        }
+                        
+                        order[i] = i;
+                    }
+                    
+                    order = order.slice(1, totalCities - 1);
+                    
+                    for (var i = 0; i < popSize; i++) {
+                        populations[i] = shuffle(order); // order을 shuffle한 결과를 population에 넣음
+                        population[i] = [0].concat(populations[i]).concat(totalCities - 1);
+                    }
+
+                    zzzzz = z;    
+
+                        calculateFieness();
+                        normalizeFitness();
+                        nextGeneration();
+
+                    recommend_total_distance[z] = kkkkk;
+                }
+            }
+        }
+
+        function reco_cal() {
+            // 총 거리가 0이거나 오류가 있을 경우를 대비하여 무한대 값으로 지정
+            for (var z in recommend_total_distance) {
+                if (recommend_total_distance[z] == "undefined" || recommend_total_distance[z] == null || recommend_total_distance[z] == "" || recommend_total_distance[z] == 0) {
+                    recommend_total_distance[z] = 99999999;
+                }
+            }
+
+            // 총 거리를 복사하여 임시로 저장하기 위한 변수
+            temp_store_recommend_total_distance = [];
+            for (var z in recommend_total_distance) {
+                temp_store_recommend_total_distance[z] = recommend_total_distance[z];
+            }
+            console.log(temp_store_recommend_total_distance);
+
+            // 총 거리를 길이순으로 sort하는 작업
+            recommend_total_distance.sort(function (a, b) {
+                return a - b;
+            })
+
+            // 각 경로에 대한 총 거리가 99999999인 것을 제거하기 위함
+            while (true) {
+                var search = recommend_total_distance.indexOf(99999999);
+                if (search != -1) {
+                    recommend_total_distance.splice(search, 1);
+                } else {
+                    break;
+                }
+            }
+
+            // 최단 거리의 경로에 대한 인덱스를 저장하기 위한 변수
+            temp_index = [];
+
+            // 추천 받은 경로의 개수가 5이상이거나 그 미만인 경우를 지정하여 인덱스를 저장시킨다.
+            if (recommend_total_distance.length >= 5) {
+                for (var z = 0; z < 5; z++) {
+                    temp_index[z] = temp_store_recommend_total_distance.indexOf(recommend_total_distance[z]);
+                }
+            } else {
+                for (var z = 0; z < recommend_total_distance.length; z++) {
+                    temp_index[z] = temp_store_recommend_total_distance.indexOf(recommend_total_distance[z]);
+                }
+            }
+            console.log(temp_index);
+
+            console.log("ㅡㅡㅡㅡㅡㅡㅡ추천 경로ㅡㅡㅡㅡㅡㅡㅡ");
+            // 해당 인덱스의 경로를 최종적으로 저장하기 위함
+            finalarr = [];
+            for (var z = 0; z < temp_index.length; z++) {
+                finalarr[z] = temparr[temp_index[z]];
+                console.log(finalarr[z]);
+            }
+        }
+
+        // tsp 방식 - 추천을 받고 경로 표시를 위함
+        // search_shortest_path2와 유사
+        function recommend_show_path(showarr) {
+            rec_check = 1;
+
+            final = [];
+            final_path = [];
+
+            total_distance = 0;
+            length_distance = [];
+
+            mmmm = 0;
+            if (node_markers[0] != null) {
+                for (var z = 0; z < node_markers.length; z++) {
+                    node_markers[z].setMap(null);
+                }
+            }
+
+            node_markers = [];
+            for (var z = 0; z < showarr.length; z++) {
+                node_markers[z] = new naver.maps.Marker({
+                    map: map2,
+                    visible: false
+                })
+            }
+
+            final_polyline_node.clear();
+
+            var tttt = showarr.length - 2;
+            mmmm = 0;
+
+            totalCities = showarr.length;
+
+            // cal_min = 99999999;
+
+            iiindex = [];
+
+            temp_array = [];
+            temp_dist = [];
+
+            if (showarr[0] != "현재위치") {
+                for (var i = 0; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(showarr[i]);
+                }
+            } else {
+                // calculate();
+                iiindex[0] = matrix_dist.length; // 초기 matrix의 길이
+                for (var i = 1; i < totalCities; i++) {
+                    iiindex[i] = all_list.indexOf(showarr[i]);
+                }
+
+                for (var z = 0; z < all_list.length; z++) {
+                    temp_array = g.shortestPath("현재위치", all_list[z]).concat("현재위치").reverse();
+                    if (temp_array.length == 1) {
+                        temp_dist[z] = 99999999;
+                    } else {
+                        temp_dist[z] = dist;
+                    }
+                }
+            }
+
+            if(tttt == 0 || tttt == 1) {
+                for (var n = 0; n < tttt + 1; n++) {
+                    final = g.shortestPath(showarr[n], showarr[n + 1]).concat([showarr[n]]).reverse();
+                    if (final.length == 1) {
+                        document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                        document.getElementById("path").innerHTML = "";
+                        document.getElementById("path_time").innerHTML = "";
+                        return;
+                    }
+                    node_marker_check(showarr[n], n);
+                    node_marker_check(showarr[n+1], n+1);
+                    push_node();
+                    length_distance[mmmm] = dist;
+                    mmmm++;
+                }
+
+                final_show();
+            } else {
+                for (var i = 0; i < totalCities; i++) {
+                    if (showarr[0] != "현재위치") {
+                        cities[i] = all_point_list[iiindex[i]];
+                    } else {
+                        if (i == 0) {
+                            cities[i] = { x: longitude, y: latitude };
+                        } else {
+                            cities[i] = all_point_list[iiindex[i]];
+                        }
+                    }
+                    order[i] = i;
+                }
+                order = order.slice(1, totalCities - 1);
+                for (var i = 0; i < popSize; i++) {
+                    populations[i] = shuffle(order); // order을 shuffle한 결과를 population에 넣음
+                    population[i] = [0].concat(populations[i]).concat(totalCities - 1);
+                }
+                for (var n = 0; n < tttt + 2; n++) {
+                    if (showarr[n] == '') {
+                        document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                        document.getElementById("path").innerHTML = "";
+                        document.getElementById("path_time").innerHTML = "";
+                        return;
+                    } else {
+                        node_marker_check(showarr[n], n);
+                    }
+                }
+                    calculateFieness();
+                    normalizeFitness();
+                    nextGeneration();
+
+                final_show3(showarr);
+            }          
+
+            final_polyline = new naver.maps.Polyline(
+                {
+                    map: map,
+                    strokeColor: '#000000',
+                    strokeWeight: 3,
+                    visible: true
+                }
+            )
+            final_polyline.setPath(final_path);
+            final_polyline_node = final_polyline.getPath();
+            
+        }
+
+        function push_node() {
+            for (var m in final) {
+                if (final[m] == '현재위치') {
+                    final_path.push(node[0]);
+                }
+                if (final[m] == 'INTER') {
+                    final_path.push(INTER);
+                }
+                for (var i = 0; i < cross_name.length; i++) {
+                    if (final[m] == cross_name[i]) {
+                        final_path.push(cross_node[i]);
+                        break;
+                    }
+                }
+                for (var i = 1; i < terminal_name.length; i++) {
+                    if (final[m] == terminal_name[i]) {
+                        final_path.push(terminal_node[i]);
+                        break;
+                    }
+                }
+                for (var i = 1; i < facility_name.length; i++) {
+                    if (final[m] == facility_name[i]) {
+                        final_path.push(facility_node[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // tsp 방식 - 추천 받았을 때
+        function push_node2(z) {
+            for (var m in recommend[z]) {
+                if (recommend[z][m] == '현재위치') {
+                    recommend_path[z].push(node[0]);
+                }
+                if (recommend[z][m] == 'INTER') {
+                    recommend_path[z].push(INTER);
+                }
+                for (var i = 0; i < cross_name.length; i++) {
+                    if (recommend[z][m] == cross_name[i]) {
+                        recommend_path[z].push(cross_node[i]);
+                        break;
+                    }
+                }
+                for (var i = 1; i < terminal_name.length; i++) {
+                    if (recommend[z][m] == terminal_name[i]) {
+                        recommend_path[z].push(terminal_node[i]);
+                        break;
+                    }
+                }
+                for (var i = 1; i < facility_name.length; i++) {
+                    if (recommend[z][m] == facility_name[i]) {
+                        recommend_path[z].push(facility_node[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function node_marker_check(a, b) {
+            if (a == '현재위치') {
+                node_markers[b].setMap(map2);
+                node_markers[b].setPosition(node[0]);
+                node_markers[b].setVisible(true);
+            }
+            terminal_node_check2(a, b);
+            facility_node_check2(a, b);
+
+            node_markers[b].setTitle(a);
+        }
+
+        // djk 방식, tsp(경유지가 0, 1개 일 때) 방식
+        function final_show() {
+            for (var m in length_distance) {
+                total_distance += length_distance[m];
+            }
+
+            if (total_distance == 0) {
+                if (node_markers[0] != null) {
+                    for (var z = 0; z < node_markers.length; z++) {
+                        node_markers[z].setMap(null);
+                    }
+                }
+
+                document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            }
+            else {
+                document.getElementById("length").innerHTML = total_distance.toFixed(6) + "m";
+
+                document.getElementById("path").innerHTML = site_name[0] + "->";
+
+                for (var z = 1; z <= node_count; z++) {
+                    document.getElementById("path").innerHTML += site_name[z] + "->";
+                }
+
+                document.getElementById("path").innerHTML += site_name[node_count + 1];
+
+                path_time_calculate();
+            }
+        }
+
+        // tsp(경유지가 2개 이상 일 때) 방식
+        function final_show2() {            
+            // total_distance = cal_min;
+
+            if (total_distance == 0) {
+                if (node_markers[0] != null) {
+                    for (var z = 0; z < node_markers.length; z++) {
+                        node_markers[z].setMap(null);
+                    }
+                }
+
+                document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            }
+            else {
+                console.log(total_distance);
+                if(total_distance == 99999999) {
+                    if (node_markers[0] != null) {
+                        for (var z = 0; z < node_markers.length; z++) {
+                            node_markers[z].setMap(null);
+                        }
+                    }
+                    document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                    document.getElementById("path").innerHTML = "";
+                    document.getElementById("path_time").innerHTML = "";
+                    return;
+                }
+                document.getElementById("length").innerHTML = total_distance.toFixed(6) + "m";
+              
+                    for (var z = 0; z < site_name.length - 1; z++) {
+                        final = g.shortestPath(site_name[bestEver[z]], site_name[bestEver[z + 1]]).concat(site_name[bestEver[z]]).reverse();
+                        if (final.length == 1) {
+                            document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+                            document.getElementById("path").innerHTML = "";
+                            document.getElementById("path_time").innerHTML = "";
+
+                            if (node_markers[0] != null) {
+                                for (var z = 0; z < node_markers.length; z++) {
+                                    node_markers[z].setMap(null);
+                                }
+                            }
+                            return;
+                        }
+                        push_node();
+                    }
+
+                document.getElementById("path").innerHTML = site_name[bestEver[0]] + "->";
+                for (var i = 1; i < site_name.length - 1; i++) {
+                    document.getElementById("path").innerHTML += site_name[bestEver[i]]+ "->";
+                }
+                document.getElementById("path").innerHTML += site_name[bestEver[site_name.length-1]];
+
+                path_time_calculate();
+            }
+        }
+
+        function final_show3(k) {
+            // total_distance = cal_min;
+
+            if (total_distance == 99999999) {
+                if (node_markers[0] != null) {
+                    for (var z = 0; z < node_markers.length; z++) {
+                        node_markers[z].setMap(null);
+                    }
+                }
+
+                document.getElementById("length").innerHTML = "잘못된 경로입니다.";
+            }
+            else {
+                document.getElementById("length").innerHTML = total_distance.toFixed(6) + "m";
+
+                for (var i = 0; i < totalCities; i++) {
+                    if (showarr[0] != "현재위치") {
+                        cities[i] = all_point_list[iiindex[i]];
+                    } else {
+                        if (i == 0) {
+                            cities[i] = { x: longitude, y: latitude };
+                        } else {
+                            cities[i] = all_point_list[iiindex[i]];
+                        }
+                    }
+                    order[i] = i;
+                }
+                order = order.slice(1, totalCities - 1);
+                for (var i = 0; i < popSize; i++) {
+                    populations[i] = shuffle(order); // order을 shuffle한 결과를 population에 넣음
+                    population[i] = [0].concat(populations[i]).concat(totalCities - 1);
+                }
+
+                document.getElementById("path").innerHTML = k[bestEver[0]] + "->";
+                for (var i = 1; i < k.length - 1; i++) {
+                    document.getElementById("path").innerHTML += k[bestEver[i]] + "->";
+                }
+                document.getElementById("path").innerHTML += k[bestEver[k.length - 1]];
+
+                path_time_calculate();
+            }
+        }
+
+        function path_time_calculate() {
+            var temp_time = Math.floor(total_distance);
+            var hour = 0, minute = 0, second = 0;
+
+            if (temp_time >= 3600) {
+                hour = Math.floor(temp_time / 3600);
+            }
+            if (temp_time >= 60) {
+                minute = Math.floor((temp_time - 3600 * hour) / 60);
+            }
+            second = temp_time - 3600 * hour - 60 * minute;
+
+            document.getElementById("path_time").innerHTML = hour + "시간 " + minute + "분 " + second + "초 걸립니다.";
+        }
+
+        function allClear() {
+            document.getElementById("show_recommend_text").innerHTML = "";
+
+            if (node_markers[0] != null) {
+                for (var z = 0; z < node_markers.length; z++) {
+                    node_markers[z].setMap(null);
+                }
+            }
+
+            if (circle != undefined) {
+                circle.setMap(null);
+            }
+            if (list_marker != undefined) {
+                for (var i = 0; i < list_marker.length; i++) {
+                    list_marker[i].setMap(null);
+                    list_marker[i].setPosition(null);
+                }
+            }
+            if (list_markers != undefined) {
+                for (var i = 0; i < list_markers.length; i++) {
+                    list_markers[i].setMap(null);
+                    list_markers[i].setPosition(null);
+                }
+            }
+            if (list_marker2 != undefined) {
+                for (var i = 0; i < list_marker2.length; i++) {
+                    list_marker2[i].setMap(null);
+                    list_marker2[i].setPosition(null);
+                }
+            }
+            if (list_markers2 != undefined) {
+                for (var i = 0; i < list_markers2.length; i++) {
+                    list_markers2[i].setMap(null);
+                    list_markers2[i].setPosition(null);
+                }
+            }
+
+            final_polyline_node.clear();
+
+            document.forms["form"].start.value = null;
+            for (var z = 1; z <= node_count; z++) {
+                xxxx[z - 1].value = null;
+            }
+            document.forms["form"].end.value = null;
+
+            document.getElementById("length").innerHTML = "";
+            document.getElementById("path").innerHTML = "";
+            document.getElementById("path_time").innerHTML = "";
+        }
+
+        function setSite() {
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                latitude = pos.coords.latitude.toFixed(6);
+                longitude = pos.coords.longitude.toFixed(6);
+
+                calculate();
+            });
+
+            document.forms["form"].start.value = '현재위치';
+        }
+
+        function path_switch() {
+            var text1 = document.forms["form"].start.value;
+            var text2 = document.forms["form"].end.value;
+            document.forms["form"].start.value = text2;
+            document.forms["form"].end.value = text1;
+        }
+
+        var circle;
+        var map3 = map;
+        var current_position;
+
+        function current_find_facility() {
+            allClear();
+
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                latitude = pos.coords.latitude.toFixed(6);
+                longitude = pos.coords.longitude.toFixed(6);
+
+                // 설계를 위해서 임의로 부여함!!!
+                // latitude = 37.449746; // 위도
+                // longitude = 126.450423; // 경도
+
+                latitude = 37.44949; // 위도
+                longitude = 126.447521; // 경도
+
+                current_position = new naver.maps.LatLng(latitude, longitude);
+
+                // 현재 위치 주변의 원에 대한 명시
+                circle = new naver.maps.Circle({
+                    map: map3,
+                    center: current_position,
+                    radius: 50, // 단위는 미터
+                    fillColor: 'green',
+                    fillOpacity: 0.2,
+                    visible: true
+                });
+
+                current_list_dis_calculate();
+                current_list_check();
+            });
+        }
+
+        var all_point_list = []; // 시설에 대한 점을 저장
+        var all_list; // 시설에 대한 이름을 저장
+        var category; // 시설의 종류를 지정
+        var means; // 시설의 의미를 지정
+        var list_count = 0;
+
+        for (var i = 1; i < terminal_node.length; i++) {
+            all_point_list[list_count++] = terminal_node[i];
+        }
+        for (var i = 1; i < facility_node.length; i++) {
+            all_point_list[list_count++] = facility_node[i];
+        }
+
+        // 터미널 : 75개, 필수 시설 : 19개, 시설 : 78개
+        all_list = [
+            "T5", "T6", "T7", "T8", "T9",
+            "T10", "T11", "T12", "T14", "T15",
+
+            "T16", "T17", "T18", "T19", "T20",
+            "T21", "T22", "T23", "T24", "T25",
+
+            "T26", "T27", "T28", "T29", "T30",
+            "T31", "T32", "T33", "T34", "T35",
+
+            "T36", "T37", "T38", "T39", "T40",
+            "T41", "T42", "T43", "T45", "T46",
+
+            "T47", "T48", "T49", "T50", "T101",
+            "T102", "T103", "T104", "T105", "T106",
+
+            "T107", "T108", "T109", "T110", "T111",
+            "T112", "T113", "T114", "T115", "T117",
+
+            "T118", "T119", "T120", "T121", "T122", 
+            "T123", "T124", "T125", "T126", "T127", 
+            
+            "T128", "T129", "T130", "T131", "T132",
+
+            "1번 출국장", "2번 출국장", "3번 출국장", "4번 출국장", "5번 출국장", "6번 출국장", "A 체크인 카운터", "B 체크인 카운터", "C 체크인 카운터", "D 체크인 카운터", "E 체크인 카운터", "F 체크인 카운터", "G 체크인 카운터", "H 체크인 카운터", "J 체크인 카운터", "K 체크인 카운터", "L 체크인 카운터", "M 체크인 카운터", "N 체크인 카운터",
+
+            "밥이답이다", "비비고", "손수김밥", "남산왕돈까스", "라그릴리아 비스트로",
+            "사누끼보레", "스트릿", "케르반", "케세이호", "하이면우동",
+
+            "롯데리아", "모스버거", "공닭", "공차", "던킨도너츠1호점",
+            "던킨도너츠2호점", "뚜레쥬르카페", "뚜레쥬르키오스크", "리나스", "베스킨라빈스31(탑승게이트)",
+
+            "빚은(탑승게이트)", "고래사어묵", "로봇김밥", "엔터엔스프레즐(탑승게이트)", "엔제리너스(동편)",
+            "엔제리너스(서편)", "위니비니", "잠바주스(T1)", "커피엣웍스1호점", "파리바게뜨(탑승게이트)",
+
+            "파리크라상", "파스쿠찌", "던킨 커피하우스", "하나은행 환전소1", "하나은행 환전소2",
+            "신한은행 환전소1", "신한은행 환전소2", "신한은행 환전소3", "신한은행 환전소4", "신한은행 환전소5",
+
+            "우리은행 환전소1", "우리은행 환전소2", "우리은행 환전소3", "롯데면세점1(주류/담배)", "롯데면세점2(주류/담배)",
+            "롯데면세점3(주류/담배)", "신라면세점1(명품브랜드)", "신라면세점2(명품브랜드)", "신라면세점3(명품브랜드)", "신라면세점3(향수/화장품)",
+
+            "신라면세점4(향수/화장품)", "신라면세점5(향수/화장품)", "신세계면세점1(명품브랜드)", "신세계면세점2(명품브랜드)", "신세계면세점3(명품브랜드)",
+            "신세계면세점4(명품브랜드)", "신세계면세점5(명품브랜드)", "신세계면세점6(명품브랜드)", "신세계면세점7(명품브랜드)", "신세계면세점8(명품브랜드)",
+
+            "신세계면세점9(명품브랜드)", "신세계면세점10(향수/화장품)", "신세계면세점11(향수/화장품)", "SM면세점1(명품브랜드)", "SM면세점2(향수/화장품)",
+            "SM면세점3(주류/담배)", "시티면세점1(명품브랜드)", "시티면세점2(향수/화장품)", "시티면세점3(주류/담배)", "그랜드면세점(향수/화장품)",
+
+            "엔타스면세점(주류/담배)", "KT로밍센터1", "KT로밍센터2", "LG유플러스로밍센터1", "SKT텔레콤",
+            "SK로밍센터1", "와이파이도시락", "플레이와이파이"
+        ];
+        // gate : 94개, food : 13개, snack : 20개, money : 10개, shop : 28개, roaming : 7개
+        category = [
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate", "gate",
+            "gate", "gate", "gate", "gate", "gate",
+
+            "gate", "gate", "gate", "gate",
+
+            "food", "food", "food", "food", "food",
+            "food", "food", "food", "food", "food",
+
+            "food", "food", "food", "snack", "snack",
+            "snack", "snack", "snack", "snack", "snack",
+
+            "snack", "snack", "snack", "snack", "snack",
+            "snack", "snack", "snack", "snack", "snack",
+
+            "snack", "snack", "snack", "money", "money",
+            "money", "money", "money", "money", "money",
+
+            "money", "money", "money", "shop", "shop",
+            "shop", "shop", "shop", "shop", "shop",
+
+            "shop", "shop", "shop", "shop", "shop",
+            "shop", "shop", "shop", "shop", "shop",
+
+            "shop", "shop", "shop", "shop", "shop",
+            "shop", "shop", "shop", "shop", "shop",
+
+            "shop", "roaming", "roaming", "roaming", "roaming",
+            "roaming", "roaming", "roaming"
+        ];
+        means = [];
+
+        var dis = [];
+
+        function current_list_dis_calculate() {
+            let temp_list_dis;
+            for (var i = 0; i < all_point_list.length; i++) {
+                temp_list_dis = new nodedistance(current_position, all_point_list[i]);
+                dis[i] = parseFloat(temp_list_dis.far());
+            }
+        }
+
+        var map4 = map;
+        var list_markers, list_marker;
+        var infoWindows, infoWindow;
+
+        function current_list_check() {
+
+            list_marker = [];
+            list_markers = [];
+            infoWindows = [];
+            var HOME_PATH = window.HOME_PATH || '.';
+            var number = 0;
+
+            for (var i = 0; i < all_point_list.length; i++) {
+                if (dis[i] <= 50) {
+                    list_marker[number] = new naver.maps.Marker({
+                        position: all_point_list[i],
+                        map: map4,
+                        title: all_list[i],
+                        // icon: {
+                        //     url: HOME_PATH + '/img/example/sp_pins_spot_v3.png',
+                        //     size: new naver.maps.Size(24, 37),
+                        //     anchor: new naver.maps.Point(12, 37),
+                        //     origin: new naver.maps.Point(0, 0)
+                        // },
+                        // zIndex: 100
+                    });
+
+                    infoWindow = new naver.maps.InfoWindow({
+                        content: '<div id="' + category[i] + '";style="width:150px;text-align:center;padding:10px;">The facility is <b>"' + all_list[i] + '"</b>.</div>'
+                    });
+
+                    list_markers.push(list_marker[number++]);
+                    infoWindows.push(infoWindow);
+                }
+            }
+
+            naver.maps.Event.addListener(map4, 'idle', function () {
+                updateMarkers(map4, list_markers);
+            });
+
+            function updateMarkers(map4, list_markers) {
+
+                var mapBounds = map4.getBounds();
+                var position;
+
+                for (var i = 0; i < list_markers.length; i++) {
+
+                    list_marker = list_markers[i]
+                    position = list_marker.getPosition();
+
+                    if (mapBounds.hasLatLng(position)) {
+                        showMarker(map4, list_marker);
+                    } else {
+                        hideMarker(map4, list_marker);
+                    }
+                }
+            }
+
+            function showMarker(map4, list_marker) {
+
+                if (list_marker.setMap()) return;
+                list_marker.setMap(map4);
+            }
+
+            function hideMarker(map4, list_marker) {
+
+                if (!list_marker.setMap()) return;
+                list_marker.setMap(null);
+            }
+
+            // 해당 마커의 인덱스를 seq라는 클로저 변수로 저장하는 이벤트 핸들러를 반환합니다.
+            function getClickHandler(seq) {
+                return function (e) {
+                    list_marker = list_markers[seq];
+                    infoWindow = infoWindows[seq];
+
+                    if (infoWindow.getMap()) {
+                        infoWindow.close();
+                    } else {
+                        infoWindow.open(map4, list_marker);
+                    }
+                }
+            }
+
+            for (var i = 0, ii = list_markers.length; i < ii; i++) {
+                naver.maps.Event.addListener(list_markers[i], 'click', getClickHandler(i));
+            }
+        }
+
+        var selection;
+        var map5 = map;
+        var list_markers2, list_marker2;
+        var infoWindows2, infoWindow2;
+
+        function category_marker(select) {
+            allClear();
+
+            selection = select.category.value;
+
+            list_marker2 = [];
+            list_markers2 = [];
+            infoWindows2 = [];
+            var HOME_PATH = window.HOME_PATH || '.';
+            var number = 0;
+
+            for (var i = 0; i < all_point_list.length; i++) {
+                if (category[i] == selection) {
+                    list_marker2[number] = new naver.maps.Marker({
+                        position: all_point_list[i],
+                        map: map5,
+                        title: all_list[i],
+                        // icon: {
+                        //     url: HOME_PATH + '/img/example/sp_pins_spot_v3.png',
+                        //     size: new naver.maps.Size(24, 37),
+                        //     anchor: new naver.maps.Point(12, 37),
+                        //     origin: new naver.maps.Point(0, 0)
+                        // },
+                        // zIndex: 100
+                    });
+
+                    infoWindow2 = new naver.maps.InfoWindow({
+                        content: '<div id="' + category[i] + '";style="width:150px;text-align:center;padding:10px;">The facility is <b>"' + all_list[i] + '"</b>.</div>'
+                    });
+
+                    list_markers2.push(list_marker2[number++]);
+                    infoWindows2.push(infoWindow2);
+                }
+            }
+
+            naver.maps.Event.addListener(map5, 'idle', function () {
+                updateMarkers(map5, list_markers2);
+            });
+
+            function updateMarkers(map5, list_markers2) {
+
+                var mapBounds = map5.getBounds();
+                var position;
+
+                for (var i = 0; i < list_markers2.length; i++) {
+
+                    list_marker2 = list_markers2[i]
+                    position = list_marker2.getPosition();
+
+                    if (mapBounds.hasLatLng(position)) {
+                        showMarker(map5, list_marker2);
+                    } else {
+                        hideMarker(map5, list_marker2);
+                    }
+                }
+            }
+
+            function showMarker(map5, list_marker2) {
+
+                if (list_marker2.setMap()) return;
+                list_marker2.setMap(map5);
+            }
+
+            function hideMarker(map5, list_marker2) {
+
+                if (!list_marker2.setMap()) return;
+                list_marker2.setMap(null);
+            }
+
+            // 해당 마커의 인덱스를 seq라는 클로저 변수로 저장하는 이벤트 핸들러를 반환합니다.
+            function getClickHandler(seq) {
+                return function (e) {
+                    list_marker2 = list_markers2[seq];
+                    infoWindow2 = infoWindows2[seq];
+
+                    if (infoWindow2.getMap()) {
+                        infoWindow2.close();
+                    } else {
+                        infoWindow2.open(map5, list_marker2);
+                    }
+                }
+            }
+
+            for (var i = 0, ii = list_markers2.length; i < ii; i++) {
+                naver.maps.Event.addListener(list_markers2[i], 'click', getClickHandler(i));
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
